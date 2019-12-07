@@ -1,16 +1,21 @@
 import json
+import os
 from datetime import datetime, timedelta
 from pprint import pprint
 
+MAX_DETENTION_OPPORTUNITIES = 4
+
 if __name__=="__main__":
     with open('infractions.json','r') as f:
-        infractions = json.load(f)
+        if os.path.exists('infractions.json'):
+            infractions = json.load(f)
+        else:
+            infractions = []
 
     command = ""
     state = "START"
 
     prompt_suffix = "\nq to quit \nr to restart"
-    max_detention_opportunities = 4
 
     new_infraction = {}
     while command.lower() != 'q':
@@ -27,7 +32,7 @@ if __name__=="__main__":
                     day = infraction_date + timedelta(days=i)
                     if day.strftime("%a") in  ["Wed","Thu"]:
                         detention_opportunities.append(day)
-                if len(detention_opportunities) >= max_detention_opportunities:
+                if len(detention_opportunities) >= MAX_DETENTION_OPPORTUNITIES:
                     for day in detention_opportunities:
                         print(f"check if {infraction['student']} attended detention on {day.strftime('%m/%d/%y')}")
                         command = input("(y/n)")
@@ -35,14 +40,14 @@ if __name__=="__main__":
                             print (f"removing {infraction['student']} from detention list")
                             infractions.remove(infraction)
                             break
-                    print (f"{infraction['student']} has missed {max_detention_opportunities} or more detention opportunities. Raise infraction level and reset date?")
+                    print (f"{infraction['student']} has missed {MAX_DETENTION_OPPORTUNITIES} or more detention opportunities. Raise infraction level and reset date?")
                     command = input("(y/n)")
                     if(command=="y"):
                         infraction['level']+=1
                         infraction['date'] = current_date.strftime('%m/%d/%y')
                         print(f"{infraction['student']}'s infraction level has risen to {infraction['level']}")
                 else:
-                    print(f"{infraction['student']} still has {max_detention_opportunities-len(detention_opportunities)}"
+                    print(f"{infraction['student']} still has {MAX_DETENTION_OPPORTUNITIES - len(detention_opportunities)}"
                           f" opportunity to visit detention")
 
             state = "STUDENT"
