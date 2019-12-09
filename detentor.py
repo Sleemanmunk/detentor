@@ -6,11 +6,11 @@ from pprint import pprint
 MAX_DETENTION_OPPORTUNITIES = 4
 
 if __name__=="__main__":
-    with open('infractions.json','r') as f:
-        if os.path.exists('infractions.json'):
+    if os.path.exists('infractions.json'):
+        with open('infractions.json','r') as f:
             infractions = json.load(f)
-        else:
-            infractions = []
+    else:
+        infractions = []
 
     command = ""
     state = "START"
